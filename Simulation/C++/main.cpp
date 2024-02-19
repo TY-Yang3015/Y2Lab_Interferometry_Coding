@@ -44,7 +44,7 @@ public:
         Eigen::ArrayXd x = Eigen::ArrayXd::LinSpaced(n_sample, start_position, -start_position) * 2. * conversion_factor;
         Eigen::ArrayXd y = Eigen::ArrayXd::Zero(n_sample);
 
-        return std::make_pair(x, y);
+        return make_pair(x, y);
     }
 
 
