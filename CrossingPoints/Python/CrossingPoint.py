@@ -60,7 +60,7 @@ class CrossingPointsAnalyser:
         self.separations = self._calc_crossing_points_separation_adjusted(self.x, self.y)
         print("The mean difference between crossing points is %.0d and the standard\
           deviation between crossing points is %.0d" % (np.mean(self.separations),
-          np.std(self.separations)))
+          np.std(self.separations, ddof=1)))
         
         mean_diff = np.mean(self.separations) # difference in musteps between crossing points
         metres_per_microstep = reference / (2.0*mean_diff)

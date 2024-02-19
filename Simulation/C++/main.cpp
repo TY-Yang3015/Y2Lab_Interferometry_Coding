@@ -36,7 +36,7 @@ public:
 
     ~InterferogramSimulator()= default;
 
-    static std::pair<Eigen::ArrayXd, Eigen::ArrayXd> auto_mesh(const double& sampling_frequency=50, const double& motor_speed=30000,
+    static pair<Eigen::ArrayXd, Eigen::ArrayXd> auto_mesh(const double& sampling_frequency=50, const double& motor_speed=30000,
                                                                const double& start_position=-1e7, const double& conversion_factor=1e-11) {
         double sampling_distance = motor_speed / sampling_frequency;
         int n_sample = static_cast<int>(2. * -start_position / sampling_distance);
