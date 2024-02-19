@@ -13,6 +13,17 @@ class CrossingPointsAnalyser:
         self.separations = None
         self.crossing_points = None
         
+    @classmethod
+    def _set_plot_style(cls):
+        try:
+            import seaborn as sns
+            sns.set_theme()
+            sns.set_context("paper")
+            sns.set(rc={"xtick.bottom" : True, "ytick.left" : True})
+            palette = sns.color_palette('pastel')
+        except ImportError:
+            pass
+        
     def _filter_y(self, y:np.ndarray, filter_order:int=2, freq:float=1, sampling_freq:float=50) -> np.ndarray:
         
         return signal.sosfilt(signal.butter(filter_order, freq, 'hp', fs=sampling_freq,
