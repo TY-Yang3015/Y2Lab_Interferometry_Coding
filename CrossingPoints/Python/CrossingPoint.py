@@ -4,6 +4,7 @@ from scipy import signal
 
 class CrossingPointsAnalyser:
     def __init__(self, data):
+        self._set_plot_style()
         self.data = data
         self.x = self.data[5]
         if self.data[0].all() == np.zeros(len(self.data[0])).all():
