@@ -14,6 +14,14 @@ class CrossingPointsAnalyser:
         self.separations = None
         self.crossing_points = None
         
+        sampling_frequency = int(np.mean(self.data[4]))
+        if sampling_frequency == 16:
+            self.sampling_frequency = 50
+        elif sampling_frequency == 13:
+            self.sampling_frequency = 200
+        elif sampling_frequency == 11:
+            self.sampling_frequency = 500
+        
     @classmethod
     def _set_plot_style(cls):
         try:
@@ -25,9 +33,9 @@ class CrossingPointsAnalyser:
         except ImportError:
             pass
         
-    def _filter_y(self, y:np.ndarray, filter_order:int=2, freq:float=1, sampling_freq:float=50) -> np.ndarray:
-        
-        return signal.sosfilt(signal.butter(filter_order, freq, 'hp', fs=sampling_freq,
+    def _filter_y(self, y:np.ndarray, filter_order:int=2, freq:float=1) -> np.ndarray:
+    
+        return signal.sosfilt(signal.butter(filter_order, freq, 'hp', fs=self.sampling_frequency,
                                  output='sos'), y)
     
     def _remove_artefact(self, x:np.ndarray, y:np.ndarray, percent:float=0.05) -> np.ndarray:
