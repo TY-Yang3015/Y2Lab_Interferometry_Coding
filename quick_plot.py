@@ -20,18 +20,18 @@ y2 = np.array(results[1])
 
 x=np.array(results[5])
 
-if y1 != np.zeros(len(y1)):
+if y1.all() != np.zeros(len(y1)).all():
     plt.figure("Detector 1")
     plt.plot(x,y1,'o-')
     plt.xlabel("Position $\mu$steps]")
     plt.ylabel("Signal 1")
-    plt.savefig("figures/quick_plot_detector_1.png")
+    plt.savefig("./quick_plot_detector_1.png")
 
-if y2 != np.zeros(len(y2)):
+if y2.all() != np.zeros(len(y2)).all():
     plt.figure("Detector 2")
     plt.plot(x,y2,'o-')
     plt.xlabel("Position $\mu$steps]")
     plt.ylabel("Signal 2")
-    plt.savefig("figures/quick_plot_detector_2.png")
+    plt.savefig("./quick_plot_detector_2.png")
 
 plt.show()
