@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import signal
+from statistics import mode
 
 class CrossingPointsAnalyser:
     def __init__(self, data):
@@ -14,13 +15,14 @@ class CrossingPointsAnalyser:
         self.separations = None
         self.crossing_points = None
         
-        sampling_frequency = int(np.mean(self.data[4]))
+        sampling_frequency = int(mode(self.data[4]))
         if sampling_frequency == 16:
             self.sampling_frequency = 50
         elif sampling_frequency == 13:
             self.sampling_frequency = 200
         elif sampling_frequency == 11:
             self.sampling_frequency = 500
+        else: raise ValueError("unable to identify sampling frequency")
         
     @classmethod
     def _set_plot_style(cls):
@@ -69,13 +71,15 @@ class CrossingPointsAnalyser:
         self.crossing_points = crossing_points
         return np.abs(np.diff(crossing_points))
         
-    def run(self, reference:float=532e-9):
+    def run(self, reference:float=532e-9, preprocessing:bool=True):
         
-        self.y = self._filter_y(self.y)
+        if preprocessing is True:
+            self.y = self._filter_y(self.y)
+            self.x, self.y = self._remove_artefact(self.x, self.y)
+        elif preprocessing is False:
+            self.y -= np.mean(self.y)
+        else: raise ValueError("only booleans are accepted for 'preprocessing'.")
         
-        self.x, self.y = self._remove_artefact(self.x, self.y)
-        
-        #self.y -= np.mean(self.y)
 
         self.separations = self._calc_crossing_points_separation_adjusted(self.x, self.y)
         print("The mean difference between crossing points is %.0d and the standard\

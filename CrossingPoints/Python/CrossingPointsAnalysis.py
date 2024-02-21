@@ -6,4 +6,4 @@ file = '%s'%(sys.argv[1])
 data = np.loadtxt(file).T
 
 analyser = CrossingPointsAnalyser(data)
-analyser.run()
+analyser.run(preprocessing=True)
