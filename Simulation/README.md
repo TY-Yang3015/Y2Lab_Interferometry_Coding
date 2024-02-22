@@ -17,6 +17,36 @@
 
 ---
 
+```python
+InterferogramSimulator(x:np.ndarray, y:np.ndarray, n_mode:int, n_sigma:int)
+```
+Initialiser to instantiate the class `InterferogramSimulator`.
+
+Input:
+- `x, y`: np.ndarray. mesh points for the simulation. using the helper function `auto_mesh()` is encouraged.
+- `n_mode`: int. number of discretised points used to simulate the continuous spectrum. affect accuracy.
+- `n_sigma`: int. number of sigmas taken into account in statics of the simulation. affect accuracy.
+
+Return:
+A instance of `InterferogramSimulator`.
+
+
+
+```python
+@staticmethod
+InterferogramSimulator.auto_mesh(sampling_frequency:Union[int, float]=50, motor_speed:Union[int, float]=30000, start_position:float=-1e7, conversion_factor:float=1e-11) -> np.ndarray:
+```
+
+Static helper function. Can be used to generate grid.
+
+Input:
+- `sampling_frequency`: int/float. sampling frequency of the detector.
+- `motor_speed`: int/float/ motor speed.
+- `start_position`: float. starting position of the sampling.
+- `conversion_factor`: float. the conversion factor from microstep to meter. 
+
+Return:
+- `x, y`: np.ndarray. mesh points for simulation. 
 
 
 ```python
