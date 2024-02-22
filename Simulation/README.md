@@ -27,6 +27,7 @@ Input:
 - wavelength: float. The central wavelength of the gaussian source.
 - sigma: float. standard deviation of the gaussian source.
 - intensity: float. relativive intensity in arbitrary unit.
+
 Return:
 - spatial intensity according to input position information.
     
