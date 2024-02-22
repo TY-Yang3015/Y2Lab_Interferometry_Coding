@@ -16,7 +16,7 @@ See the `Example.py` files for a quick demonstration of usage. C++ examples are 
 
 Using `Example.py`s:
 - open terminal, then `cd /path/to/the/python/file`.
-- execute by `python Example.py test_data.txt` (remove `test_data.txt` for the `Simulation` file).
+- execute by `python Example.py test_data.txt` (no `test_data.txt` for `Simulation`).
 - your advised to use these classes in `jupyter notebook` to enjoy the interactive plottings.
 
 ---
