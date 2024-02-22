@@ -1,13 +1,17 @@
-# Imperial_Y2_Lab_Interferometry_Coding
+# Imperial College Year2 Interferometry Lab Coding
 
-There are five major components that are available at the moment.
+There are five major components that are available at the moment. Please see `README.md` in each folder for further instructions. 
+
+All classes take modular design that all related functionalities are encapsulated in individual methods. Please see the DocStrings in each Python file for reference.
+
+All implemented C++ classes have similar structures compared to Python implementations.
 
 See the `Example.py` files for a quick demonstration of usage. C++ examples are included in the `main.cpp` files in the `main` functions. Note the C++ files need to be compiled locally with `cmake`.
 
 Using `Example.py`s:
 - open terminal, then `cd /path/to/the/python/file`.
 - execute by `python Example.py test_data.txt` (remove `test_data.txt` for the `Simulation` file).
-- your advised to these classes in `jupyter notebook` to enjoy the interactive plottings.
+- your advised to use these classes in `jupyter notebook` to enjoy the interactive plottings.
 
 `quick_plot.py`:
 - Content: the quick visualisor for lab data, automatically check which machine has the valid data recorded.
