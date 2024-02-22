@@ -1,4 +1,4 @@
-# Imperial College Year2 Interferometry Lab Coding
+# Imperial College Year 2 Interferometry Lab Coding
 
 ---
 
