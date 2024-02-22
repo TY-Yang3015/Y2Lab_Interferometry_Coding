@@ -17,7 +17,7 @@
 
 ---
 
-- `add_gaussian()`
+
 
 ```python
 InterferogramSimulator.add_gaussian(wavelength:float, sigma:float, intensity:float) -> np.ndarray
@@ -34,7 +34,7 @@ Return:
 
 
 
-- `add_square()`
+
 
 ```python
 InterferogramSimulator.add_square(start:float, width:float, intensity:float) -> np.ndarray
@@ -50,7 +50,7 @@ Return:
 - spatial: np.ndarray. intensity according to input position information.
     
     
-- `inspect_simulation()`
+
 
 ```python
 InterferogramSimulator.inspect_simulation() -> pd.DataFrame
@@ -64,7 +64,7 @@ Return:
 - pd.Dataframe. Contains a dataframe of the simulated source and spectrum information.
 
 
-- `visualise()`
+
 
 ```python
 InterferogramSimulator.visualise(save:bool=False, interactive:bool=True)
@@ -79,7 +79,7 @@ Input:
 Return: ignored.
 
 
-- `show_spectrum()`
+
 
 ```python
 InterferogramSimulator.show_spectrum(save:bool=False, interactive:bool=False, manual_lim:tuple=None)
@@ -95,11 +95,13 @@ Input:
 - manual_lim: tuple. with shape `(lower_limit, upper_limit)`. this argument manually adjust the x-limits of static plot by `matplotlib`. you are advised to use automatic limit by leaving this argument as `None` when the data is not imported from outside.
 
 
-- `load_cpp_simulation_result()`
+
 
 ```python
 InterferogramSimulator.load_cpp_simulation_result(filepath:str)
 ```
+
+Load C++ simualtion results file for visualisation. 
 
 Input:
 - filepath: str. this should be the direct output from C++ simulation. `inspect_simulation()` method will be disabled once this method is invoked.
