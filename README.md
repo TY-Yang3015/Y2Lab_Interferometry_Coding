@@ -4,7 +4,7 @@
 
 There are five major components that are available at the moment. Please see `README.md` in each folder for further instructions. 
 
-All classes take modular design that all related functionalities are encapsulated in individual methods. Please see the DocStrings in each Python file for reference.
+All classes take modular design such that all related functionalities are encapsulated in individual methods. Please see the DocStrings in each Python file for reference.
 
 All implemented C++ classes have similar structures compared to Python implementations.
 
