@@ -201,6 +201,11 @@ class LocalCalibrator():
         self.crossing_points = self._get_crossing_points(self.x, self.y1)
 
         self.x = self._correct_x(self.x, self.crossing_points, self.reference_lambda)
+        
+        if np.diff(self.x).mean() < 0:
+            self.x = self.x[::-1]
+            self.y1 = self.y1[::-1]
+            self.y2 = self.y2[::-1]
 
         interpolator = self._interpolate(self.x, self.y2[:len(self.x)])
         

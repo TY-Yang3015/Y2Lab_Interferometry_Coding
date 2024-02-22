@@ -60,7 +60,11 @@ class GlobalCalibrator():
     def _auto_sanitise(self, x0:np.ndarray, y0:np.ndarray) -> np.ndarray:
         
         dx = np.diff(x0)
-        anomalies = np.argwhere((dx < 0) | (dx == 0))
+        
+        if np.mean(dx) < 0:
+            anomalies = np.argwhere((dx > 0.) | (dx == 0.))
+        else:
+            anomalies = np.argwhere((dx < 0.) | (dx == 0.))
         
         percentage = 0
         #decide if sanitise
@@ -142,10 +146,15 @@ class GlobalCalibrator():
         return lambda_, yf
         
     def calibrate(self, metres_per_microstep:float, density:int, remove_offset_method:str):
-        self.metres_per_microstep = metres_per_microstep
+        self.metres_per_microstep = np.float64(metres_per_microstep)
         self.x *= self.metres_per_microstep
         
         self.x, self.y = self._auto_sanitise(self.x, self.y)
+        
+        if np.diff(self.x).mean() < 0:
+            self.x = self.x[::-1]
+            self.y = self.y[::-1]
+        
         self.x, self.y = self._remove_offset(self.x, self.y, remove_offset_method)
         interpolator = self._interpolate(self.x, self.y)
         self.lambda_, self.yf = self._get_spectrum(self.x, interpolator, density)

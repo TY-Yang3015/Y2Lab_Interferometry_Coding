@@ -24,6 +24,9 @@ class CrossingPointsAnalyser:
             self.sampling_frequency = 500
         else: raise ValueError("unable to identify sampling frequency")
         
+        self.x = self.x[self.data[4] == sampling_frequency]
+        self.y = self.y[self.data[4] == sampling_frequency]
+        
     @classmethod
     def _set_plot_style(cls):
         try:
