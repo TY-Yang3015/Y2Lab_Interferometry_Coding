@@ -14,6 +14,8 @@
 
 ### Public Methods
 
+---
+
 - `add_gaussian()`
 
 ```python
@@ -22,14 +24,19 @@ InterferogramSimulator.add_gaussian(wavelength:float, sigma:float, intensity:flo
 Adding Gaussian source to the simulation profile.
 
 Input:
-wavelength: float. The central wavelength of the gaussian source.
-sigma: float. standard deviation of the gaussian source.
-intensity: float. relativive intensity in arbitrary unit.
-
+    - wavelength: float. The central wavelength of the gaussian source.
+    - sigma: float. standard deviation of the gaussian source.
+    - intensity: float. relativive intensity in arbitrary unit.
+Return:
+    - spatial intensity according to input position information.
+    
+    
+---
 
 
 ## C++ Version
 
+### Dependence Summary
 - `eigen-3.4.0` (for array operations)
 
 
