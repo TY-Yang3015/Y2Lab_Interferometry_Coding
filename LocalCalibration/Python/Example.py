@@ -8,5 +8,5 @@ results = np.loadtxt(file, dtype='float64').T
 results[0] = results[1]
 
 calibrator = LocalCalibrator(results)
-calibrator.calibrate(546e-9, 1000000, "filter")
+calibrator.calibrate(546.074*1e-9, 1000000, "filter")
 calibrator.visualise(interactive=True)

@@ -116,7 +116,7 @@ class GlobalCalibrator():
             
         elif method == "filter":
         
-            y = signal.sosfilt(signal.butter(2, 1, 'hp', fs=self.sampling_frequency, output='sos'), y)
+            y = signal.sosfilt(signal.butter(2, 0.7, 'hp', fs=self.sampling_frequency, output='sos'), y)
             
             percent = 0.05
             y = y[int(len(y)*(percent)):int(len(y)*(1-percent))]
@@ -188,8 +188,8 @@ class GlobalCalibrator():
             
             
             df = pd.DataFrame({
-                    'x':self.lambda_,
-                    'y': self.yf
+                    'x':self.lambda_[self.lambda_<1000e-9],
+                    'y': self.yf[self.lambda_<1000e-9]
                 })
             label = {'x':'Wavelength (m)', 'y':'Amplitude'}
             fig = px.line(df, x='x', y='y', labels=label)
@@ -200,9 +200,5 @@ class GlobalCalibrator():
             fig.show()
             
         else: raise ValueError('only booleans are supported for "interactive" argument.')
-        
-        
-            
-            
         
         

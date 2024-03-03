@@ -19,32 +19,39 @@ class LocalCalibrator():
         self.data = data.astype('float64')
         
         
-        self.y1 = np.array(self.data[0])
-        self.y2 = np.array(self.data[1])
+        self.y1 = np.array(self.data[1])
+        self.y2 = np.array(self.data[0])
         
         self.x = np.arange(0, len(self.y1), 1).astype("float64")
             
         self.remove_offset=None
        
-        sampling_frequency = int(mode(self.data[4]))
-        if sampling_frequency == 16:
-            self.sampling_frequency = 50
-        elif sampling_frequency == 13:
-            self.sampling_frequency = 200
-        elif sampling_frequency == 11:
-            self.sampling_frequency = 500
-        else: raise ValueError("unable to identify sampling frequency")
+        sampling_frequency = self.sampling_frequency
             
-        self.x = self.x[self.data[4] == sampling_frequency]
+        self.x = self.x[self.data[4] == mode(self.data[4])]
         
         self.crossing_points = None
         
         if len(self.y1[self.data[4] == sampling_frequency]) == len(self.y2[self.data[4] == sampling_frequency]):
-            self.y1 = self.y1[self.data[4] == sampling_frequency]
-            self.y2 = self.y2[self.data[4] == sampling_frequency]
+            self.y1 = self.y1[self.data[4] == mode(self.data[4])]
+            self.y2 = self.y2[self.data[4] == mode(self.data[4])]
             
         self.yf = None
         self.lambda_ = None
+        
+        
+    @property
+    def sampling_frequency(self) -> float:
+        
+        samples = self.data[2]
+        samples = samples[samples == samples[len(samples)//2]]
+        samples = len(samples)
+        
+        freqs = np.array([50, 200, 500])
+        freq = freqs[np.argmin(np.abs(freqs - samples))]
+        
+        return freq
+            
        
         
     @classmethod
@@ -67,10 +74,61 @@ class LocalCalibrator():
         warnings.formatwarning = custom_formatwarning
         
     
-    def _auto_sanitise(self, x0:np.ndarray, y0:np.ndarray) -> np.ndarray:
-        
+    def _auto_sanitise(self, x0:np.ndarray, y10:np.ndarray, y20:np.ndarray) -> np.ndarray:
+        print("remove incorrect sampling")
         dx = np.diff(x0)
         anomalies = np.argwhere((dx < 0) | (dx == 0))
+        
+        percentage = 0
+        #decide if sanitise
+        if len(anomalies) == 0:
+            print("no sanitisation applied.")
+            return x0, y10, y20
+            
+        else:
+            #decide strategy: one-tail or two-tail
+            if np.std(anomalies) < (len(x0)/3):
+                #one-tail: decide cut head or tail
+                if np.mean(anomalies) > (len(x0)/2):
+                    x = x0[:np.min(anomalies)]
+                    y1 = y10[:np.min(anomalies)]
+                    y2 = y20[:np.min(anomalies)]
+                    percentage = (float(len(x0)) - float(np.min(anomalies)))/float(len(x0))
+                    print("one-tail sanitisation at tail applied.")
+                    print("number of sanitised elements: ", int(len(x0) - np.min(anomalies)))
+                    print("number of anomalous elements: ", len(anomalies))
+                    print("sanitisation percentage: ", format(percentage*100., '.2e'), "%")
+                else:
+                    x = x0[np.max(anomalies)+1:]
+                    y1 = y10[np.max(anomalies)+1:]
+                    y2 = y20[np.max(anomalies)+1:]
+                    percentage = (np.max(anomalies))/len(x0)
+                    print("one-tail sanitisation at head applied.")
+                    print("number of sanitised elements: ", int(np.max(anomalies) +1))
+                    print("number of anomalous elements: ", len(anomalies))
+                    print("cutoff percentage: ", format(percentage*100., '.2e'), "%")
+            #apply two-tail
+            else:
+                head = np.max(anomalies[anomalies<(len(x0)/2)])
+                tail = np.min(anomalies[anomalies>(len(x0)/2)])
+                x = x0[head+1:tail]
+                y1 = y10[head+1:tail]
+                y2 = y20[head+1:tail]
+                percentage = 1 - ((tail - head)/len(x0))
+                print("two-tail sanitisation applied.")
+                print("number of sanitised elements: ", int(percentage*len(x0)))
+                print("number of anomalous elements: ", len(anomalies))
+                print("cutoff percentage: ", format(percentage*100., '.2e'), "%")
+                
+        if percentage > 0.3:
+            warnings.warn("significant cutoff is applied. take care of the data quality.", RuntimeWarning)
+            
+        return x, y1, y2
+            
+    def _remove_nan(self, x0:np.ndarray, y0:np.ndarray) -> np.ndarray:
+        
+        print("removing nan values...")
+        anomalies = np.argwhere(np.isnan(y0))
         
         percentage = 0
         #decide if sanitise
@@ -124,7 +182,8 @@ class LocalCalibrator():
         
             y = signal.sosfilt(signal.butter(2, 1, 'hp', fs=self.sampling_frequency, output='sos'), y)
             
-            percent = 0.05
+            
+            percent = 0.2
             if len(x) == len(y):
                 y = y[int(len(y)*(percent)):int(len(y)*(1-percent))]
                 x = x[int(len(x)*(percent)):int(len(x)*(1-percent))]
@@ -154,6 +213,19 @@ class LocalCalibrator():
                 extra = -b/a - xa
                 crossing_points = np.append(crossing_points, x[i]+extra)
         return crossing_points
+    
+    def _get_crossing_points_adjusted(self, x:np.ndarray, y:np.ndarray) -> np.ndarray:
+        crossing_points = np.array([])
+        for i in range(len(y)-1):
+            if (y[i] <= 0 and y[i+1] >= 0) or (y[i] >= 0 and y[i+1] <= 0):
+                m = (y[i+1] - y[i]) / (x[i+1] - x[i])
+                c = y[i] - m * x[i]
+                if m != 0:
+                    crossing_x = -c / m
+                    crossing_points = np.append(crossing_points, crossing_x)
+        
+        return crossing_points
+    
         
     def _correct_x(self, x, crossing_points, reference_lambda):
     
@@ -179,33 +251,45 @@ class LocalCalibrator():
         
         
     def _get_spectrum(self, x:np.ndarray, interpolator:interpolate.CubicSpline, density:int) -> np.ndarray:
-        x_sample = np.linspace(x[0], x[-1], density)
-        yf = np.fft.fftshift(np.fft.fft(interpolator(x_sample)))
-        xf = np.fft.fftfreq(len(x_sample))
+        yf = np.fft.fftshift(np.fft.fft(interpolator(x)))
+        xf = np.fft.fftfreq(len(x))
         xf = np.fft.fftshift(xf)
         yf = np.abs(yf[xf>0])
         xf = xf[xf>0]
-        lambda_ = np.abs(np.mean(np.diff(x_sample))/xf)
+        lambda_ = np.abs(np.mean(np.diff(x))/xf)
         
         return lambda_, yf
         
     def calibrate(self, reference_lambda:float, density:int, remove_offset_method:str):
         self.reference_lambda = reference_lambda
         
-    
-        
         
         self.x, self.y1 = self._remove_offset(self.x, self.y1, remove_offset_method)
         self.x, self.y2 = self._remove_offset(self.x, self.y2, remove_offset_method)
         
-        self.crossing_points = self._get_crossing_points(self.x, self.y1)
+        
+        self.crossing_points = self._get_crossing_points_adjusted(self.x, self.y1)
+        
+        
+        
+        
 
         self.x = self._correct_x(self.x, self.crossing_points, self.reference_lambda)
+        
+
+        
+        self.x, self.crossing_points = self._remove_nan(self.x, self.crossing_points)
+        
+
+        
         
         if np.diff(self.x).mean() < 0:
             self.x = self.x[::-1]
             self.y1 = self.y1[::-1]
             self.y2 = self.y2[::-1]
+            
+            
+        
 
         interpolator = self._interpolate(self.x, self.y2[:len(self.x)])
         
@@ -244,11 +328,11 @@ class LocalCalibrator():
             
             
             df = pd.DataFrame({
-                    'x':self.lambda_,
-                    'y': self.yf
+                    'x':self.lambda_[(self.lambda_<800e-9) & (400e-9<self.lambda_)],
+                    'y': self.yf[(self.lambda_<800e-9) & (400e-9<self.lambda_)]
                 })
             label = {'x':'Wavelength (m)', 'y':'Amplitude'}
-            fig = px.line(df, x='x', y='y', labels=label)
+            fig = px.line(df, x='x', y='y', labels=label, log_y=False)
             if save is True:
                 warnings.warn("interactive figures need extra packs to be saved, refer to documentation."+
                               " or you can manually save the static image."
@@ -257,8 +341,4 @@ class LocalCalibrator():
             
         else: raise ValueError('only booleans are supported for "interactive" argument.')
         
-        
-            
-            
-        
-        
+    

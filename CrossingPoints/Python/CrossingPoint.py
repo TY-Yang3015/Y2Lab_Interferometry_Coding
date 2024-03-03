@@ -38,7 +38,8 @@ class CrossingPointsAnalyser:
         except ImportError:
             pass
         
-    def _filter_y(self, y:np.ndarray, filter_order:int=2, freq:float=1) -> np.ndarray:
+    def _filter_y(self, y:np.ndarray, filter_order:int=2, freq:float=0.7
+    ) -> np.ndarray:
     
         return signal.sosfilt(signal.butter(filter_order, freq, 'hp', fs=self.sampling_frequency,
                                  output='sos'), y)
@@ -74,7 +75,7 @@ class CrossingPointsAnalyser:
         self.crossing_points = crossing_points
         return np.abs(np.diff(crossing_points))
         
-    def run(self, reference:float=532e-9, preprocessing:bool=True):
+    def run(self, reference:float, preprocessing:bool=True):
         
         if preprocessing is True:
             self.y = self._filter_y(self.y)
